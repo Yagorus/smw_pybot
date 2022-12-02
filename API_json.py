@@ -154,7 +154,7 @@ def hist_weather(lon, lat):
 
     return "\n".join(msg)
 
-print(hist_weather(39.099724,39.099724))
+print(population(39.099724,39.099724))
 # print(datetime.today())
 # respones = requests.get("http://api.openweathermap.org/data/2.5/weather?q=London,uk&APPID=cfce34114d2ccfed0e03e8f758c356d2")
 # print (respones)

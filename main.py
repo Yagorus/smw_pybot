@@ -6,13 +6,12 @@ import logging
 from dotenv import load_dotenv
 import creds
 import API_json
+import json
 
 # Get all hidden vars from file creds.env 
 load_dotenv()
 # make bot
 bot = telebot.TeleBot(creds.BOT_TOKEN) 
-
-
 # loggin into API service
 
 # logging.basicConfig(
@@ -43,9 +42,21 @@ def get_weather(message):
     bot.send_message(message.chat.id, API_json.geo_weather(39.099724,39.099724))
 
 
+
+@bot.message_handler(commands=["find"])
+def get_geo(message):
+    bot.send_message(message.chat.id, "Send your geo")
+
+@bot.message_handler(func=lambda message: True)
+def test_callback(message):
+    print()
+
+
 def main():
     # APP_TOKEN = os.getenv('APP_TOKEN')
-    bot.infinity_polling()  
+    # bot.infinity_polling() 
+    r = json.load('city.list.json')
+
 
 
 if __name__ == '__main__':
