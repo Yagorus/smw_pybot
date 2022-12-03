@@ -6,7 +6,6 @@ import logging
 from dotenv import load_dotenv
 import creds
 import API_json
-import json
 
 # Get all hidden vars from file creds.env 
 load_dotenv()
@@ -37,6 +36,7 @@ def start_markup():
 def startBot(message):
    bot.reply_to(message, "options : ",reply_markup=start_markup())
 
+
 @bot.message_handler(commands=['city'])
 def get_weather(message):
     bot.send_message(message.chat.id, API_json.geo_weather(39.099724,39.099724))
@@ -44,20 +44,39 @@ def get_weather(message):
 
 
 @bot.message_handler(commands=["find"])
-def get_geo(message):
-    bot.send_message(message.chat.id, "Send your geo")
+def get_weather(message):
+    bot.send_message(message.chat.id, "Input city name")
+    bot.register_next_step_handler(message, get_city)
 
-@bot.message_handler(func=lambda message: True)
-def test_callback(message):
-    print()
+def get_city(message):
+    txt=API_json.get_weather_city(message.text)
+    bot.send_message(message.chat.id, txt)
+
+@bot.message_handler(commands=["forecast"])
+def get_weather_5(message):
+    bot.send_message(message.chat.id, "Input city name")
+    bot.register_next_step_handler(message, get_city_5)
+
+def get_city_5(message):
+    txt=API_json.get_weather_city_5(message.text)
+    bot.send_message(message.chat.id, txt)
+    
+@bot.message_handler(commands=["help"])
+def help_msg(message):
+    txt = "\n".join([
+        '/start - run bot',
+        '/help - output this help message',
+        '/find - get info about weather in city via coords',
+        '/forecast - get forecast for 5 days'
+    ])
+    bot.send_message(message.chat.id,txt)
 
 
 def main():
     # APP_TOKEN = os.getenv('APP_TOKEN')
-    # bot.infinity_polling() 
-    r = json.load('city.list.json')
-
-
+    bot.infinity_polling() 
+    
 
 if __name__ == '__main__':
     main()
+

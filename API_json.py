@@ -5,6 +5,7 @@ import math
 from datetime import datetime, timedelta, timezone
 from dotenv import load_dotenv
 import creds
+from geopy.geocoders import Nominatim
 
 load_dotenv()
 # API_KEY = os.getenv('APP_WEATHER_KEY')
@@ -13,7 +14,7 @@ API_KEY = creds.API_KEY
 
 # for message list
 
-def get_weather(loc):
+def get_weather_city(loc):
     try:
         # if city name consists more than one word
         for i in loc:
@@ -39,7 +40,6 @@ def get_weather(loc):
 
 def geo_weather(lon, lat):
     url = 'http://api.openweathermap.org/data/2.5/weather?lat={}&lon={}&units=metric&appid={}'.format(lat, lon, API_KEY)
-    print(url)
     data = requests.get(url)
     response = json.loads(data.content.decode('utf8'))
     city = response['name']
@@ -53,8 +53,7 @@ def geo_weather(lon, lat):
           ' feels like {}°C,wind {} m/s, {}.'.format(day, city, country, temp, feels_like, wind, "".join(main))
     return msg
 
-
-def get_weather_5(loc):
+def get_weather_city_5(loc):
     msg = []
     msgg=[]
     try:
@@ -89,6 +88,8 @@ def get_weather_5(loc):
     finally:
         return msgg + "\n" + "\n".join([msg[i] for i in range(0, len(msg))])
 
+
+print(get_weather_city_5("Kiev"))
 
 def geo_weather_5(lon, lat):
     url = 'http://api.openweathermap.org/data/2.5/forecast?lat={}&lon={}&units=metric&cnt=5&appid={}'.format(lat, lon,
@@ -154,7 +155,3 @@ def hist_weather(lon, lat):
 
     return "\n".join(msg)
 
-print(population(39.099724,39.099724))
-# print(datetime.today())
-# respones = requests.get("http://api.openweathermap.org/data/2.5/weather?q=London,uk&APPID=cfce34114d2ccfed0e03e8f758c356d2")
-# print (respones)
