@@ -1,7 +1,12 @@
 import creds
 import telebot
 from telebot import types
-import os
+
+from sqlalchemy import create_engine, exists
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.declarative import declarative_base
+from db import get_engine_from_settings
+
 import logging
 from dotenv import load_dotenv
 import creds
@@ -18,12 +23,16 @@ bot = telebot.TeleBot(creds.BOT_TOKEN)
 # )
 # logger = logging.getLogger(__name__)
 
-# db config
-
+# # db config for AWS that take db url from local vars in conteiner
 # engine = create_engine(os.getenv('APP_DATABASE_URL'))
-# conn = engine.connect()
-# Session = sessionmaker(engine)
-# s = Session()
+
+
+# config for local db
+Base = declarative_base()
+engine = get_engine_from_settings()
+Base.metadata.create_all(bind = engine)
+session = sessionmaker(bind = engine)()
+
 
 def start_markup():
     markup = types.ReplyKeyboardMarkup(row_width=2)

@@ -5,7 +5,6 @@ import math
 from datetime import datetime, timedelta, timezone
 from dotenv import load_dotenv
 import creds
-from geopy.geocoders import Nominatim
 
 load_dotenv()
 # API_KEY = os.getenv('APP_WEATHER_KEY')
@@ -88,9 +87,6 @@ def get_weather_city_5(loc):
     finally:
         return msgg + "\n" + "\n".join([msg[i] for i in range(0, len(msg))])
 
-
-print(get_weather_city_5("Kiev"))
-
 def geo_weather_5(lon, lat):
     url = 'http://api.openweathermap.org/data/2.5/forecast?lat={}&lon={}&units=metric&cnt=5&appid={}'.format(lat, lon,
                                                                                                              API_KEY)
@@ -140,7 +136,6 @@ def hist_weather(lon, lat):
         dt = int(day.replace(tzinfo=timezone.utc).timestamp())
         url = 'https://api.openweathermap.org/data/2.5/onecall/timemachine?lat={}&lon={}&exclude=' \
               'hourly&dt={}&units=metric&appid={}'.format(lat, lon, dt, API_KEY)
-        print(url)
         data = requests.get(url)
         response = json.loads(data.content.decode('utf8'))
         temp = math.ceil(response['current']['temp'])
