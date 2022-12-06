@@ -1,5 +1,6 @@
-from sqlalchemy import Column, Integer, String, create_engine
-import sqlalchemy 
+from sqlalchemy import Column, Integer, String, create_engine, ForeignKey, update
+from sqlalchemy.orm import relationship
+
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy_utils import database_exists, create_database
@@ -42,28 +43,72 @@ def get_engine_from_settings():
             )
 
 
-class UserCoord(Base):  
-    __tablename__  = 'usercoord'
-    id = Column(Integer, primary_key=True)
-    u_id = Column(Integer(), index=True)
-    name = Column(String(60))
-    lat = Column(String(16))
-    lon = Column(String(16))
-    city = Column(String(64))
-    country = Column(String(16))
-    pop = Column(Integer)
 
-    def __init__(self, id, u_id, name, lat,lon,city,country, pop):
-        self.id = id
-        self.u_id = u_id
+class User(Base):
+    __tablename__ = "user"
+    id = Column(Integer, primary_key=True, index = True)
+    count = Column(Integer())       # id in accaunt in Telegram
+    name = Column(String(60))       # username in Telegram (@username)
+    
+    def __init__(self, name, count):
+        # self.id = id
         self.name = name
-        self.lat = lat
-        self.lon = lon
-        self.city = city
-        self.country = country
-        self.pop = pop
+        self.count = count
 
     def __repr__(self):
-        return "<Coordinates(name='{}', lat='{}', lon='{}', u_id='{}', city='{}')>".format(self.name,
-                                                                                           self.lat, self.lon,
-                                                                                           self.u_id, self.city)
+        return f"<User(id='{self.id}', name='{self.name}', city='{self.count}')>"
+
+    
+    
+class City(Base):
+    __tablename__  = 'city'
+    id = Column(Integer, primary_key=True)
+    lon = Column(String(16))                # Longitude
+    lat = Column(String(16))                # Latitude 
+    city = Column(String(64))               # City name
+    pop = Column(Integer)                   # City Population
+    country_id = Column(Integer, ForeignKey("country.id"))           # City Population
+   
+    
+    country = relationship('Country')
+
+
+
+    def __init__(self, lon, lat, city, pop, country_id):
+        # self.id = id
+        self.lon = lon
+        self.lat = lat
+        self.city = city
+        self.pop = pop
+        self.country_id = country_id
+
+    def __repr__(self):
+        return f"<City(id='{self.id}', city='{self.city}', pop='{self.pop}', country_id = '{self.country_id}', lon = '{self.lon}', lat = '{self.lat}')>"
+
+class Country(Base):
+    __tablename__  = 'country'
+    id = Column(Integer, primary_key=True)
+    name = Column(String(16))
+
+    def __init__(self, name):
+        # self.id = id
+        self.name = name
+
+    def __repr__(self):
+        return f"<Country(id='{self.id}', country='{self.name}')>"
+
+
+class Info(Base):
+    __tablename__  = 'info'
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey("user.id"))
+    city_id = Column(Integer, ForeignKey("city.id"))
+
+    user = relationship('User')
+    country = relationship('City')
+
+    def __repr__(self):
+        return f"<Info(id='{self.id}' ,user_id='{self.user_id}', city_id='{self.city_id}')>"
+    
+
+Base.metadata.create_all(get_engine_from_settings())

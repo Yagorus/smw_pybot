@@ -37,6 +37,44 @@ def get_weather_city(loc):
         return msg
 
 
+#return dictionary with lon,lat as a key, and values as a integer
+def get_coords_city(loc):
+    try:
+        # if city name consists more than one word
+        for i in loc:
+            if i in [" ", "-"]:
+                loc = loc.replace(i, "%20")
+        url = 'http://api.openweathermap.org/data/2.5/weather?q={}&units=metric&appid={}'.format(loc, API_KEY)
+        data = requests.get(url)
+        response = json.loads(data.content.decode('utf8'))
+        coord = response['coord']
+    except:
+        msg = "Please check the spelling of the city. If name is compound try with '-'."
+        return None
+    return coord
+
+# print(type(get_coords_city('Kyiv')['lon']))
+
+#retrun country id as a string 
+def get_country_name(loc):
+    try:
+        # if city name consists more than one word
+        for i in loc:
+            if i in [" ", "-"]:
+                loc = loc.replace(i, "%20")
+        url = 'http://api.openweathermap.org/data/2.5/weather?q={}&units=metric&appid={}'.format(loc, API_KEY)
+        data = requests.get(url)
+        response = json.loads(data.content.decode('utf8'))
+        # a = {"coord":{"lon":30.5167,"lat":50.4333},"weather":[{"id":801,"main":"Clouds","description":"few clouds","icon":"02n"}],"base":"stations","main":{"temp":-8.49,"feels_like":-8.49,"temp_min":-8.49,"temp_max":-7.99,"pressure":1030,"humidity":91},"visibility":10000,"wind":{"speed":0.89,"deg":160,"gust":2.24},"clouds":{"all":14},"dt":1670298861,"sys":{"type":2,"id":2003742,"country":"UA","sunrise":1670305364,"sunset":1670334920},"timezone":7200,"id":703448,"name":"Kyiv","cod":200}
+        country_id = response['sys']['country']
+    except:
+        msg = "Please check the spelling of the city. If name is compound try with '-'."
+        return None
+    
+    return country_id
+
+# print(get_country_name('Kyiv'))
+
 def geo_weather(lon, lat):
     url = 'http://api.openweathermap.org/data/2.5/weather?lat={}&lon={}&units=metric&appid={}'.format(lat, lon, API_KEY)
     data = requests.get(url)

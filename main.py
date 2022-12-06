@@ -5,7 +5,7 @@ from telebot import types
 from sqlalchemy import create_engine, exists
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
-from db import get_engine_from_settings
+from db import get_engine_from_settings, City, User, Country, Info
 
 import logging
 from dotenv import load_dotenv
@@ -45,12 +45,9 @@ def start_markup():
 def startBot(message):
    bot.reply_to(message, "options : ",reply_markup=start_markup())
 
-
 @bot.message_handler(commands=['city'])
 def get_weather(message):
     bot.send_message(message.chat.id, API_json.geo_weather(39.099724,39.099724))
-
-
 
 @bot.message_handler(commands=["find"])
 def get_weather(message):
@@ -79,7 +76,74 @@ def help_msg(message):
         '/forecast - get forecast for 5 days'
     ])
     bot.send_message(message.chat.id,txt)
+    print(message)
 
+@bot.message_handler(commands=["commit"])
+def commit_db(message):
+    bot.send_message(message.chat.id, "Input city for commit")
+    bot.register_next_step_handler(message, commit_city)
+
+#testing
+def commit_city(message):
+    # commit_user_to_db(message)
+    if not (API_json.get_coords_city(message.text) == None):
+        coords=API_json.get_coords_city(message.text)
+        cityname = message.text
+        country_id = commit_country(cityname)
+        pop = API_json.population(coords['lon'], coords["lat"])
+
+        city = City(
+            lon=str(coords['lon']),
+            lat=str(coords['lat']),
+            city=cityname,
+            pop=pop['population'],
+            country_id = country_id
+        )
+        qr = session.query(exists().
+        where(  City.lon==str(coords['lon']),
+                City.lat==str(coords['lat']),
+                City.city==cityname,
+                City.pop==pop['population'],
+                City.country_id == country_id)).scalar()
+        try:
+            if qr is False:
+                session.add(city)
+                session.commit()
+                print("City added to db")
+        finally:
+            print(country_id)
+            session.close()
+    
+#testing
+def commit_country(city):
+    country = API_json.get_country_name(city)
+    qr = session.query(exists().where(Country.name == country)).scalar()
+    try:
+        if qr is False:
+            country=Country(name=country)
+            session.add(country)
+            session.commit()
+            print("Country added to db")
+            
+    finally:
+        result = session.query(Country.id).filter_by(name=country).all()
+        return result[0][0]
+        
+        
+def commit_user_to_db(user):
+    count = user.from_user.id
+    name = user.from_user.username
+
+
+    user_db = User(count= count, name=name)
+    qr = session.query(exists().where(User.name == name, User.count == count)).scalar()
+    try:
+        if qr is False:
+            session.add(user_db)
+            print("user added in try catch")
+            session.commit()
+    finally:
+        session.close()
 
 def main():
     # APP_TOKEN = os.getenv('APP_TOKEN')
