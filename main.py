@@ -207,6 +207,7 @@ def delete_city_from_db_hdlr(message):
     try:
         city_id=get_city_id(message.text)
         session.query(Info).filter_by(city_id=city_id).delete()
+        session.commit()
         print(message.text + "\tDeleted from list")
     except TypeError:
         bot.send_message(message.chat.id, "There is no such elemet")
