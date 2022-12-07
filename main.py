@@ -73,7 +73,9 @@ def help_msg(message):
         '/start - run bot',
         '/help - output this help message',
         '/find - get info about weather in city via coords',
-        '/forecast - get forecast for 5 days'
+        '/forecast - get forecast for 5 days',
+        '/check - get forecast for all saved ',
+        '/list - check all cites saved for user ',
     ])
     bot.send_message(message.chat.id,txt)
     print(message)
@@ -113,6 +115,7 @@ def commit_city(message):
             user_id = get_user_id(message.from_user.id)
             commit_info_to_db(user_id, city_id)
             session.close()
+            list_db(message)
     
 def get_country_id(city):
     country = API_json.get_country_name(city)
@@ -161,25 +164,52 @@ def commit_info_to_db(user_id, city_id):
     finally:
         pass
         
-
-
 @bot.message_handler(commands=['check'])
 def get_weather_from_db(message):
-    user_id=get_user_id_from_db(message)
-    result = session.query(Info.city_id).filter_by(user_id=user_id).all()
-    user_id_lst = [i[0] for i in result]
-    for i in user_id_lst:
-        result = session.query(City.city).filter_by(id=i).first()
-        get_city_db(message, result[0])
+    try:
+        user_id=get_user_id_from_db(message)
+        result = session.query(Info.city_id).filter_by(user_id=user_id).all()
+        user_id_lst = [i[0] for i in result]
+        for i in user_id_lst:
+            result = session.query(City.city).filter_by(id=i).first()
+            get_city_db(message, result[0])
+    except TypeError:
+        bot.send_message(message.chat.id, "No elements in db")
 
 def get_city_db(message, cityname):
     txt=API_json.get_weather_city(cityname)
     bot.send_message(message.chat.id, txt)
 
-
 def get_user_id_from_db(Telegram_message):
     return session.query(User.id).filter_by(count=Telegram_message.from_user.id).first()[0]
 
+@bot.message_handler(commands=["list"])
+def list_db(message):
+    try:
+        user_id=get_user_id_from_db(message)
+        result = session.query(Info.city_id).filter_by(user_id=user_id).all()
+        user_id_lst = [i[0] for i in result]
+        print_lst = []
+        txt = '\n\t-'
+        for i in user_id_lst:
+            result = session.query(City.city).filter_by(id=i).first()
+            print_lst.append(result[0])
+        bot.send_message(message.chat.id,"Saved cytes:\n\t-"+txt.join(print_lst))
+    except TypeError:
+        bot.send_message(message.chat.id, "No elements in db")
+
+@bot.message_handler(commands=['delete'])
+def delete_city_from_db(message):
+    bot.send_message(message.chat.id, "Input city name, thay you want to delete")
+    bot.register_next_step_handler(message, delete_city_from_db_hdlr)
+
+def delete_city_from_db_hdlr(message):
+    try:
+        city_id=get_city_id(message.text)
+        session.query(Info).filter_by(city_id=city_id).delete()
+        print(message.text + "\tDeleted from list")
+    except TypeError:
+        bot.send_message(message.chat.id, "There is no such elemet")
 
 def main():
     # APP_TOKEN = os.getenv('APP_TOKEN')
