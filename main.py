@@ -83,7 +83,6 @@ def commit_db(message):
     bot.send_message(message.chat.id, "Input city for commit")
     bot.register_next_step_handler(message, commit_city)
 
-#testing
 def commit_city(message):
     commit_user_to_db(message)
     if not (API_json.get_coords_city(message.text) == None):
@@ -115,7 +114,6 @@ def commit_city(message):
             commit_info_to_db(user_id, city_id)
             session.close()
     
-#testing
 def get_country_id(city):
     country = API_json.get_country_name(city)
     qr = session.query(exists().where(Country.name == country)).scalar()
@@ -163,9 +161,29 @@ def commit_info_to_db(user_id, city_id):
     finally:
         pass
         
+
+
+@bot.message_handler(commands=['check'])
+def get_weather_from_db(message):
+    user_id=get_user_id_from_db(message)
+    result = session.query(Info.city_id).filter_by(user_id=user_id).all()
+    user_id_lst = [i[0] for i in result]
+    for i in user_id_lst:
+        result = session.query(City.city).filter_by(id=i).first()
+        get_city_db(message, result[0])
+
+def get_city_db(message, cityname):
+    txt=API_json.get_weather_city(cityname)
+    bot.send_message(message.chat.id, txt)
+
+
+def get_user_id_from_db(Telegram_message):
+    return session.query(User.id).filter_by(count=Telegram_message.from_user.id).first()[0]
+
+
 def main():
     # APP_TOKEN = os.getenv('APP_TOKEN')
-    bot.infinity_polling() 
+    bot.infinity_polling()
     
 
 if __name__ == '__main__':

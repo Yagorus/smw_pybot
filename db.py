@@ -112,3 +112,5 @@ class Info(Base):
     
 
 Base.metadata.create_all(get_engine_from_settings())
+# engine = get_engine_from_settings()
+# session = sessionmaker(bind = engine)()
