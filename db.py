@@ -112,23 +112,3 @@ class Info(Base):
     
 
 Base.metadata.create_all(get_engine_from_settings())
-# engine = get_engine_from_settings()
-# session = sessionmaker(bind = engine)()
-
-# cntr0 = Country(name = "US")
-# cntr1 = Country(name = "GB")
-# cntr2 = Country(name = "RU")
-# cntr3 = Country(name = "AU")
-# cntr4 = Country(name = "GM")
-
-# session.add(cntr0)
-# session.add(cntr1)
-# session.add(cntr2)
-# session.add(cntr3)
-# session.add(cntr4)
-# session.commit()
-
-# result = session.query(Country.id).filter_by(name="UA").first()
-# print(result)
-# print(type(result))
-# session.close()

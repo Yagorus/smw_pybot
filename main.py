@@ -110,7 +110,9 @@ def commit_city(message):
                 session.add(city)
                 session.commit()
         finally:
-            commit_info_to_db(message.from_user.id, country_id)
+            city_id = get_city_id(cityname)
+            user_id = get_user_id(message.from_user.id)
+            commit_info_to_db(user_id, city_id)
             session.close()
     
 #testing
@@ -122,6 +124,12 @@ def get_country_id(city):
         return result[0]
     else:
         return session.query(Country.id).filter_by(name=country).first()[0]
+
+def get_city_id(city):
+    return session.query(City.id).filter_by(city=city).first()[0]
+
+def get_user_id(Telegram_count_id):
+    return session.query(User.id).filter_by(count=Telegram_count_id).first()[0]
 
 def commit_country_to_db(country):
     qr = session.query(exists().where(Country.name == country)).scalar()
@@ -145,9 +153,16 @@ def commit_user_to_db(TelegramMessage):
     finally:
         session.close()
 
-def commit_info_to_db(user, city):
-    pass
-
+def commit_info_to_db(user_id, city_id):
+    info_db = Info(user_id= user_id, city_id=city_id)
+    qr = session.query(exists().where(Info.user_id == user_id, Info.city_id == city_id)).scalar()
+    try:
+        if qr is False:
+            session.add(info_db)
+            session.commit()
+    finally:
+        pass
+        
 def main():
     # APP_TOKEN = os.getenv('APP_TOKEN')
     bot.infinity_polling() 
