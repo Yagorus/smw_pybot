@@ -85,11 +85,11 @@ def commit_db(message):
 
 #testing
 def commit_city(message):
-    # commit_user_to_db(message)
+    commit_user_to_db(message)
     if not (API_json.get_coords_city(message.text) == None):
         coords=API_json.get_coords_city(message.text)
         cityname = message.text
-        country_id = commit_country(cityname)
+        country_id = get_country_id(cityname)
         pop = API_json.population(coords['lon'], coords["lat"])
 
         city = City(
@@ -109,41 +109,44 @@ def commit_city(message):
             if qr is False:
                 session.add(city)
                 session.commit()
-                print("City added to db")
         finally:
-            print(country_id)
+            commit_info_to_db(message.from_user.id, country_id)
             session.close()
     
 #testing
-def commit_country(city):
+def get_country_id(city):
     country = API_json.get_country_name(city)
     qr = session.query(exists().where(Country.name == country)).scalar()
-    try:
-        if qr is False:
-            country=Country(name=country)
-            session.add(country)
-            session.commit()
-            print("Country added to db")
-            
-    finally:
-        result = session.query(Country.id).filter_by(name=country).all()
-        return result[0][0]
-        
-        
-def commit_user_to_db(user):
-    count = user.from_user.id
-    name = user.from_user.username
+    if commit_country_to_db(country) is True:
+        result = session.query(Country.id).filter_by(name=country).first()
+        return result[0]
+    else:
+        return session.query(Country.id).filter_by(name=country).first()[0]
 
-
+def commit_country_to_db(country):
+    qr = session.query(exists().where(Country.name == country)).scalar()
+    if qr is False:
+        country=Country(name=country)
+        session.add(country)
+        session.commit()
+        return True
+    else:
+        return False
+    
+def commit_user_to_db(TelegramMessage):
+    count = TelegramMessage.from_user.id
+    name = TelegramMessage.from_user.username
     user_db = User(count= count, name=name)
     qr = session.query(exists().where(User.name == name, User.count == count)).scalar()
     try:
         if qr is False:
             session.add(user_db)
-            print("user added in try catch")
             session.commit()
     finally:
         session.close()
+
+def commit_info_to_db(user, city):
+    pass
 
 def main():
     # APP_TOKEN = os.getenv('APP_TOKEN')
