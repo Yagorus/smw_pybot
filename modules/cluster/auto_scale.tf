@@ -2,7 +2,7 @@ resource "aws_launch_configuration" "ecs_ec2_launch_config" {
     image_id             = data.aws_ami.latest_amazon_linux.id
     iam_instance_profile = aws_iam_instance_profile.ecs_agent.name
     security_groups      = [aws_security_group.security_group_port_i80.id]
-    key_name             = "docker_rsa"
+    
     user_data            = "#!/bin/bash\necho ECS_CLUSTER=${var.app_name}-${var.environment}-cluster >> /etc/ecs/ecs.config"
     instance_type        = "t2.micro"
 
