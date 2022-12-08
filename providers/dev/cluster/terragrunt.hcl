@@ -21,6 +21,6 @@ dependency "ecr" {
 }
 
 inputs = {
-    ecr_repository_url = dependency.ecr.output.ecr_repository_url
-    ssm_db_pass_name  = dependency.initbuild.output.ssm_db_pass_name
+    ecr_repository_url = dependency.ecr.outputs.ecr_repository_url
+    ssm_db_pass_name  = dependency.initbuild.outputs.ssm_db_pass_name
 }
