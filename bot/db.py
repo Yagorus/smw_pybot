@@ -28,6 +28,13 @@ def get_engine(user, passwd, host, port, db):
     engine = create_engine(url, pool_size=50, echo=False)
     return engine
 
+def get_engine_aws(system_var):
+    url = os.getenv(system_var)
+    if not database_exists(url):
+        create_database(url)
+    engine = create_engine(url, pool_size=50, echo=False)
+    return engine
+
 #method for apply engine (also for local db)
 def get_engine_from_settings():
     keys = ['pguser', 'pgpassword', 'pghost', 'pgport', 'pgdb']
@@ -111,6 +118,7 @@ class Info(Base):
         return f"<Info(id='{self.id}' ,user_id='{self.user_id}', city_id='{self.city_id}')>"
     
 
-Base.metadata.create_all(get_engine_from_settings())
+Base.metadata.create_all(get_engine_aws("APP_DATABASE_URL"))
+
 # engine = get_engine_from_settings()
 # session = sessionmaker(bind = engine)()

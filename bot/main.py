@@ -1,22 +1,20 @@
-import creds
+import os
 import telebot
-
 from telebot import types
 
 from sqlalchemy import create_engine, exists
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
-from db import get_engine_from_settings, City, User, Country, Info
+from db import City, User, Country, Info
 
 import logging
 from dotenv import load_dotenv
-import creds
 import API_json as API_json
 
 # Get all hidden vars from file creds.env 
 load_dotenv()
 # make bot
-bot = telebot.TeleBot(creds.BOT_TOKEN) 
+bot = telebot.TeleBot(os.getenv("BOT_TOKEN")) 
 # loggin into API service
 
 # logging.basicConfig(
@@ -27,10 +25,12 @@ bot = telebot.TeleBot(creds.BOT_TOKEN)
 # # db config for AWS that take db url from local vars in conteiner
 # engine = create_engine(os.getenv('APP_DATABASE_URL'))
 
+#for local start db
+# engine = get_engine_from_settings()
 
 # config for local db
 Base = declarative_base()
-engine = get_engine_from_settings()
+engine = create_engine(os.getenv('APP_DATABASE_URL'))
 Base.metadata.create_all(bind = engine)
 session = sessionmaker(bind = engine)()
 

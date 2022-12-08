@@ -18,12 +18,12 @@ resource "aws_ssm_parameter" "key" {
   }
 }
 
-resource "aws_ssm_parameter" "db_pass" {
-  name  = "DB_PASS"
-  type  = "String"
-  value = var.db_password
-  overwrite = false
-  tags = {
-    Name = "${var.app_name}-${var.environment}-key"
-  }
-}
+# resource "aws_ssm_parameter" "db_pass" {
+#   name  = "DB_PASS"
+#   type  = "String"
+#   value = var.db_password
+#   overwrite = false
+#   tags = {
+#     Name = "${var.app_name}-${var.environment}-key"
+#   }
+# }

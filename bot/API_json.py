@@ -4,12 +4,9 @@ import os
 import math
 from datetime import datetime, timedelta, timezone
 from dotenv import load_dotenv
-import creds
 
 load_dotenv()
-# API_KEY = os.getenv('APP_WEATHER_KEY')
-API_KEY = creds.API_KEY
-
+API_KEY = os.getenv("API_KEY")
 
 # for message list
 

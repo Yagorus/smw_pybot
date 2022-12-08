@@ -2,7 +2,7 @@ locals {
 environment         = "dev"
 app_name            = "bot"
 aws_profile         = "default"
-aws_account         = "064173783062"
+aws_account         = "367668710117"
 aws_region          = "eu-central-1"
 image_tag           = "0.0.1"
 app_count           = 2
@@ -36,7 +36,7 @@ remote_state {
 
     config = {
         encrypt = true
-        bucket = format("%s-%s-s3", local.app_name, local.environment)
+        bucket = format("%s-%s-s3-bucket", local.app_name, local.environment)
         key =  format("%s/terraform.tfstate", path_relative_to_include())
         region  = local.aws_region
         profile = local.aws_profile
