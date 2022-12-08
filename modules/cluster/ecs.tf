@@ -3,7 +3,7 @@ resource "aws_ecs_cluster" "aws_ecs_cluster" {
     aws_ecs_capacity_provider.capacity_provider,
     aws_autoscaling_group.autoscale
   ]
-  name = "${var.app_name}-${var.environment}-cluster"
+  name = "${var.app_name}-${var.environment}--cluster"
   capacity_providers = [aws_ecs_capacity_provider.capacity_provider.name]
   tags = {
     Name = "${var.app_name}-${var.environment}-cluster"
@@ -56,7 +56,7 @@ resource "aws_ecs_task_definition" "aws_ecs_task" {
 
 resource "aws_ecs_service" "main" {
   depends_on = [aws_iam_role.ecsTaskExecutionRole]
-  name            = "${var.app_name}-${var.environment}-service"
+  name            = "${var.app_name}-${var.environment}--service"
   cluster         = aws_ecs_cluster.aws_ecs_cluster.id
   task_definition = aws_ecs_task_definition.aws_ecs_task.arn
   desired_count   = 1
@@ -77,7 +77,7 @@ resource "aws_ecs_service" "main" {
 }
 
 resource "aws_ecs_capacity_provider" "capacity_provider" {
-  name = "${var.app_name}-${var.environment}-capacity-provider"
+  name = "${var.app_name}-${var.environment}--capacity-provider"
 
   auto_scaling_group_provider {
     auto_scaling_group_arn         = aws_autoscaling_group.autoscale.arn
