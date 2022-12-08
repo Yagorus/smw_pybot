@@ -29,6 +29,6 @@ resource "aws_iam_role_policy_attachment" "ecs_agent" {
 }
 
 resource "aws_iam_instance_profile" "ecs_agent" {
-  name = "ecs-agent"
+  name = "${var.app_name}-${var.environment}-ecs-agent"
   role = aws_iam_role.ecs_agent.name
 }
