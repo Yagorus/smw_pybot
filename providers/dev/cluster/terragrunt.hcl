@@ -8,6 +8,9 @@ include {
 
 dependency "initbuild" {
     config_path = "../initbuild"
+    mock_outputs = {
+      ssm_db_pass_name = "ssm_name_db_passwd"
+    }
 }
 
 dependency "ecr" {
@@ -18,6 +21,6 @@ dependency "ecr" {
 }
 
 inputs = {
-    ecr_repository_url = dependency.ecr.outputs.ecr_repository_url
-    ssm_db_pass_name  = dependency.initbuild.outputs.ssm_db_pass_name
+    ecr_repository_url = dependency.ecr.output.ecr_repository_url
+    ssm_db_pass_name  = dependency.initbuild.output.ssm_db_pass_name
 }
