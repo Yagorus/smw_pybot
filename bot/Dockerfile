@@ -6,15 +6,15 @@ ARG api_key
 
 ENV BOT_TOKEN=$token
 ENV API_KEY=$api_key
-
+ENV APP_DATABASE_URL=$db_url
 #docker build --build-arg token='yyyy' --build-arg api_key='yyyy' -t weather:v2 .
-
 #example env and local var
 # ARG telegram_bot_token
 # ENV TELEGRAM_bot_token=$telegram_bot_token
 
 RUN env | grep "BOT_TOKEN"
 RUN env | grep "API_KEY"
+RUN env | grep "APP_DATABASE_URL"
 
 
 
