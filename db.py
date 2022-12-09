@@ -10,6 +10,7 @@ from dotenv import load_dotenv
 # load_dotenv()
 
 Base = declarative_base()
+engine = create_engine(os.getenv('APP_DATABASE_URL'))
 
 # Data for local db 
 postgresql = {
@@ -23,6 +24,13 @@ postgresql = {
 # method for local test to create engine
 def get_engine(user, passwd, host, port, db):
     url = f'postgresql://{user}:{passwd}@{host}:{port}/{db}'
+    if not database_exists(url):
+        create_database(url)
+    engine = create_engine(url, pool_size=50, echo=False)
+    return engine
+
+def get_engine_aws(system_var):
+    url = os.getenv(system_var)
     if not database_exists(url):
         create_database(url)
     engine = create_engine(url, pool_size=50, echo=False)
@@ -111,6 +119,4 @@ class Info(Base):
         return f"<Info(id='{self.id}' ,user_id='{self.user_id}', city_id='{self.city_id}')>"
     
 
-Base.metadata.create_all(get_engine_from_settings())
-# engine = get_engine_from_settings()
-# session = sessionmaker(bind = engine)()
+Base.metadata.create_all(engine)

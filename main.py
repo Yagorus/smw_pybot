@@ -1,21 +1,18 @@
-import creds
 import telebot
 from telebot import types
+import os
 
 from sqlalchemy import create_engine, exists
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 from db import get_engine_from_settings, City, User, Country, Info
 
-import logging
 from dotenv import load_dotenv
-import creds
 import API_json
 
 # Get all hidden vars from file creds.env 
 load_dotenv()
 # make bot
-bot = telebot.TeleBot(creds.BOT_TOKEN) 
 # loggin into API service
 
 # logging.basicConfig(
@@ -24,7 +21,8 @@ bot = telebot.TeleBot(creds.BOT_TOKEN)
 # logger = logging.getLogger(__name__)
 
 # # db config for AWS that take db url from local vars in conteiner
-# engine = create_engine(os.getenv('APP_DATABASE_URL'))
+bot = telebot.TeleBot(os.getenv("BOT_TOKEN")) 
+engine = create_engine(os.getenv('APP_DATABASE_URL'))
 
 
 # config for local db
@@ -78,7 +76,6 @@ def help_msg(message):
         '/list - check all cites saved for user ',
     ])
     bot.send_message(message.chat.id,txt)
-    print(message)
 
 @bot.message_handler(commands=["commit"])
 def commit_db(message):
@@ -213,7 +210,6 @@ def delete_city_from_db_hdlr(message):
         bot.send_message(message.chat.id, "There is no such elemet")
 
 def main():
-    # APP_TOKEN = os.getenv('APP_TOKEN')
     bot.infinity_polling()
     
 
