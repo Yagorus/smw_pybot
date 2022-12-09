@@ -11,7 +11,6 @@ import logging
 from dotenv import load_dotenv
 import API_json as API_json
 
-# Get all hidden vars from file creds.env 
 load_dotenv()
 # make bot
 bot = telebot.TeleBot(os.getenv("BOT_TOKEN")) 
