@@ -17,9 +17,6 @@ load_dotenv()
 bot = telebot.TeleBot(os.getenv("BOT_TOKEN")) 
 # loggin into API service
 
-# logging.basicConfig(
-#     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
-# )
 # logger = logging.getLogger(__name__)
 
 # # db config for AWS that take db url from local vars in conteiner
