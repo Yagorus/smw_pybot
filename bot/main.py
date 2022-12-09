@@ -21,8 +21,9 @@ engine = create_engine(os.getenv('APP_DATABASE_URL'))
 
 # config for local db
 Base = declarative_base()
+engine = create_engine(os.getenv('APP_DATABASE_URL'))
 Base.metadata.create_all(bind = engine)
-session = sessionmaker(engine)()
+session = sessionmaker(bind = engine)()
 
 
 def start_markup():
@@ -203,6 +204,7 @@ def delete_city_from_db_hdlr(message):
         bot.send_message(message.chat.id, "There is no such elemet")
 
 def main():
+    # APP_TOKEN = os.getenv('APP_TOKEN')
     bot.infinity_polling()
     
 
