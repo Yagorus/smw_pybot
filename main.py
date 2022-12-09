@@ -1,28 +1,35 @@
-import os
 import telebot
 from telebot import types
 
 from sqlalchemy import create_engine, exists
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
-from db import City, User, Country, Info
-
+from bot.db import get_engine_from_settings, City, User, Country, Info
+import os
 import logging
 from dotenv import load_dotenv
-import API_json as API_json
+import bot.API_json
 
+# Get all hidden vars from file creds.env 
 load_dotenv()
 # make bot
-bot = telebot.TeleBot(os.getenv("BOT_TOKEN")) 
+# bot = telebot.TeleBot(creds.BOT_TOKEN) 
+# loggin into API service
+
+# logging.basicConfig(
+#     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
+# )
+# logger = logging.getLogger(__name__)
+
+# db config for AWS that take db url from local vars in conteiner
 engine = create_engine(os.getenv('APP_DATABASE_URL'))
 
-#for local start db
-# engine = get_engine_from_settings()
 
 # config for local db
 Base = declarative_base()
+engine = get_engine_from_settings()
 Base.metadata.create_all(bind = engine)
-session = sessionmaker(engine)()
+session = sessionmaker(bind = engine)()
 
 
 def start_markup():
@@ -38,7 +45,7 @@ def startBot(message):
 
 @bot.message_handler(commands=['city'])
 def get_weather(message):
-    bot.send_message(message.chat.id, API_json.geo_weather(39.099724,39.099724))
+    bot.send_message(message.chat.id, bot.API_json.geo_weather(39.099724,39.099724))
 
 @bot.message_handler(commands=["find"])
 def get_weather(message):
@@ -46,7 +53,7 @@ def get_weather(message):
     bot.register_next_step_handler(message, get_city)
 
 def get_city(message):
-    txt=API_json.get_weather_city(message.text)
+    txt=bot.API_json.get_weather_city(message.text)
     bot.send_message(message.chat.id, txt)
 
 @bot.message_handler(commands=["forecast"])
@@ -55,7 +62,7 @@ def get_weather_5(message):
     bot.register_next_step_handler(message, get_city_5)
 
 def get_city_5(message):
-    txt=API_json.get_weather_city_5(message.text)
+    txt=bot.API_json.get_weather_city_5(message.text)
     bot.send_message(message.chat.id, txt)
     
 @bot.message_handler(commands=["help"])
@@ -69,6 +76,7 @@ def help_msg(message):
         '/list - check all cites saved for user ',
     ])
     bot.send_message(message.chat.id,txt)
+    print(message)
 
 @bot.message_handler(commands=["commit"])
 def commit_db(message):
@@ -77,11 +85,11 @@ def commit_db(message):
 
 def commit_city(message):
     commit_user_to_db(message)
-    if not (API_json.get_coords_city(message.text) == None):
-        coords=API_json.get_coords_city(message.text)
+    if not (bot.API_json.get_coords_city(message.text) == None):
+        coords=bot.API_json.get_coords_city(message.text)
         cityname = message.text
         country_id = get_country_id(cityname)
-        pop = API_json.population(coords['lon'], coords["lat"])
+        pop = bot.API_json.population(coords['lon'], coords["lat"])
 
         city = City(
             lon=str(coords['lon']),
@@ -108,7 +116,7 @@ def commit_city(message):
             list_db(message)
     
 def get_country_id(city):
-    country = API_json.get_country_name(city)
+    country = bot.API_json.get_country_name(city)
     qr = session.query(exists().where(Country.name == country)).scalar()
     if commit_country_to_db(country) is True:
         result = session.query(Country.id).filter_by(name=country).first()
@@ -167,7 +175,7 @@ def get_weather_from_db(message):
         bot.send_message(message.chat.id, "No elements in db")
 
 def get_city_db(message, cityname):
-    txt=API_json.get_weather_city(cityname)
+    txt=bot.API_json.get_weather_city(cityname)
     bot.send_message(message.chat.id, txt)
 
 def get_user_id_from_db(Telegram_message):
@@ -203,6 +211,7 @@ def delete_city_from_db_hdlr(message):
         bot.send_message(message.chat.id, "There is no such elemet")
 
 def main():
+    # APP_TOKEN = os.getenv('APP_TOKEN')
     bot.infinity_polling()
     
 
