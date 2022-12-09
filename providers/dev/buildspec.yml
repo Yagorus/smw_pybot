@@ -32,5 +32,4 @@ phases:
     commands:
       - env
       - cd "${CODEBUILD_SRC_DIR}/providers/dev/cluster"
-      - terragrunt plan -var="image_tag=${TAG}" 
       - terragrunt apply -var="image_tag=${TAG}" -auto-approve
