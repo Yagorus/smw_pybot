@@ -11,15 +11,11 @@ import logging
 from dotenv import load_dotenv
 import API_json as API_json
 
-# Get all hidden vars from file creds.env 
 load_dotenv()
 # make bot
 bot = telebot.TeleBot(os.getenv("BOT_TOKEN")) 
 # loggin into API service
 
-# logging.basicConfig(
-#     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
-# )
 # logger = logging.getLogger(__name__)
 
 # # db config for AWS that take db url from local vars in conteiner
