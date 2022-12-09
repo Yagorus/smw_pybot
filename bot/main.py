@@ -14,12 +14,7 @@ import API_json as API_json
 load_dotenv()
 # make bot
 bot = telebot.TeleBot(os.getenv("BOT_TOKEN")) 
-# loggin into API service
-
-# logger = logging.getLogger(__name__)
-
-# # db config for AWS that take db url from local vars in conteiner
-# engine = create_engine(os.getenv('APP_DATABASE_URL'))
+engine = create_engine(os.getenv('APP_DATABASE_URL'))
 
 #for local start db
 # engine = get_engine_from_settings()
