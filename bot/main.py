@@ -28,7 +28,7 @@ def start_markup():
 
 @bot.message_handler(commands=['start'])
 def startBot(message):
-   bot.reply_to(message, "options : ",reply_markup=start_markup())
+   bot.send_message(message, "Hello, it's diploma work of Yehor Sidenko\nType /help to get more information",reply_markup=start_markup())
 
 @bot.message_handler(commands=['city'])
 def get_weather(message):
@@ -61,6 +61,8 @@ def help_msg(message):
         '/forecast - get forecast for 5 days',
         '/check - get forecast for all saved ',
         '/list - check all cites saved for user ',
+        '/commit - add city to your list',
+        '/delete - delete city to your list'
     ])
     bot.send_message(message.chat.id,txt)
 
