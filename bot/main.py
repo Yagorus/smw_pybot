@@ -62,7 +62,7 @@ def help_msg(message):
         '/check - get forecast for all saved ',
         '/list - check all cites saved for user ',
         '/commit - add city to your list',
-        '/delete - delete city to your list'
+        '/delete - delete city from your list '
     ])
     bot.send_message(message.chat.id,txt)
 
