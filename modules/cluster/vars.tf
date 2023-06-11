@@ -48,7 +48,7 @@ variable "engine" {
     default     = "postgres"
 }
 variable "engine_version" {
-    default     = "12.9"
+    default     = "15.3"
 }
 variable "username" {
     default   = "postgres"
