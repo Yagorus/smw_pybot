@@ -7,21 +7,14 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 from db import City, User, Country, Info
 
-import logging
-from dotenv import load_dotenv
 import API_json as API_json
 
-load_dotenv()
 # make bot
 bot = telebot.TeleBot(os.getenv("BOT_TOKEN")) 
 engine = create_engine(os.getenv('APP_DATABASE_URL'))
 
-#for local start db
-# engine = get_engine_from_settings()
-
 # config for local db
 Base = declarative_base()
-engine = create_engine(os.getenv('APP_DATABASE_URL'))
 Base.metadata.create_all(bind = engine)
 session = sessionmaker(bind = engine)()
 
